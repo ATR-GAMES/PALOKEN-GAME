@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#120a24">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PALOKEN">
+  <meta name="description" content="PALOKEN: peleas de stickman con tinta. Juega contra la máquina o reta a un amigo con un link.">
+  <meta property="og:title" content="PALOKEN — combate de tinta">
+  <meta property="og:description" content="¡Te reto a una pelea de stickman! Abre el link y entra a mi sala.">
+  <title>PALOKEN</title>
+  <link rel="manifest" href="/PALOKEN-GAME/manifest.webmanifest">
+  <link rel="icon" href="/PALOKEN-GAME/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/PALOKEN-GAME/icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/PALOKEN-GAME/assets/index-d1T5UVWr.js"></script>
+  <link rel="stylesheet" crossorigin href="/PALOKEN-GAME/assets/index-EpCU0Ign.css">
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <!-- controles táctiles -->
+  <div id="touch" class="hidden">
+    <div id="stick-zone"><div id="stick"><div id="knob"></div></div></div>
+    <div id="pad">
+      <button class="btn sm" data-k="b" id="btn-b"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.3-3 7.8-7 9.5-4-1.7-7-5.2-7-9.5V6z"/></svg><small>GUARDIA</small></button>
+      <button class="btn sm" data-k="g" id="btn-g"><svg viewBox="0 0 24 24"><path d="M6 12.5V7.5a1.5 1.5 0 0 1 3 0v4M9 11V5.5a1.5 1.5 0 0 1 3 0V11M12 11V6.5a1.5 1.5 0 0 1 3 0V12M15 12.5V9a1.5 1.5 0 0 1 3 0v5a7 7 0 0 1-7 7h-.5a6 6 0 0 1-5-2.7l-2.2-3.6a1.5 1.5 0 0 1 2.4-1.7L6 15.5"/></svg><small>AGARRE</small></button>
+      <button class="btn" data-k="p" id="btn-p"><svg viewBox="0 0 24 24"><path d="M7 12V8.5a1.5 1.5 0 0 1 3 0V11M10 10.5V7a1.5 1.5 0 0 1 3 0v3.5M13 10.5V7.5a1.5 1.5 0 0 1 3 0V11M16 11.5a1.5 1.5 0 0 1 3 0v2.5a6.5 6.5 0 0 1-6.5 6.5H12a5 5 0 0 1-5-5v-3.5a1.5 1.5 0 0 1 3 0"/></svg><small>PUÑO</small></button>
+      <button class="btn" data-k="k" id="btn-k"><svg viewBox="0 0 24 24"><path d="M8 3h5v8l3 2.5h3a2 2 0 0 1 2 2V18H5v-3l3-3.5z"/><path d="M5 21h16"/></svg><small>PATADA</small></button>
+      <button class="btn hv" data-k="pf" id="btn-pf"><svg viewBox="0 0 24 24"><path d="M7 12V8.5a1.5 1.5 0 0 1 3 0V11M10 10.5V7a1.5 1.5 0 0 1 3 0v3.5M13 10.5V7.5a1.5 1.5 0 0 1 3 0V11M16 11.5a1.5 1.5 0 0 1 3 0v2.5a6.5 6.5 0 0 1-6.5 6.5H12a5 5 0 0 1-5-5v-3.5a1.5 1.5 0 0 1 3 0"/><path d="M20 2.5l.6 2.4M23 6.5l-2.4.4M17 1.8l-.2 2.3" stroke-width="1.8"/></svg><small>GANCHO</small></button>
+      <button class="btn hv" data-k="kf" id="btn-kf"><svg viewBox="0 0 24 24"><path d="M8 3h5v8l3 2.5h3a2 2 0 0 1 2 2V18H5v-3l3-3.5z"/><path d="M5 21h16"/><path d="M20 2.5l.6 2.4M23 6.5l-2.4.4M17 1.8l-.2 2.3" stroke-width="1.8"/></svg><small>GIRATORIA</small></button>
+      <button class="btn sp" data-k="s" id="btn-s"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.5 6.2 6.6.5-5.1 4.3 1.6 6.5L12 16.4 6.4 20l1.6-6.5L3 9.2l6.6-.5z"/></svg><small>ESPECIAL</small></button>
+    </div>
+  </div>
+  <button id="pause-btn" class="hidden" aria-label="Pausa"><i></i><i></i></button>
+  <div id="ping" class="hidden"><i></i><b>0</b> ms</div>
+  <button id="fs-btn" aria-label="Pantalla completa" title="Pantalla completa">
+    <svg class="fs-enter" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>
+    <svg class="fs-exit" viewBox="0 0 24 24"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>
+  </button>
+
+  <div id="ui">
+    <section id="scr-main" class="screen">
+      <h1 class="logo">PALOKEN</h1>
+      <p class="tag">— combate de tinta —</p>
+      <div class="menu">
+        <button class="mbtn red" id="btn-arcade">ARCADE</button>
+        <button class="mbtn" data-go="cpu">VS MÁQUINA</button>
+        <button class="mbtn" id="btn-online">MULTIJUGADOR</button>
+        <button class="mbtn ghost" data-go="help">CONTROLES</button>
+        <button class="mbtn ghost btn-settings">AJUSTES</button>
+      </div>
+    </section>
+
+    <section id="scr-arcade" class="screen">
+      <h2 id="arc-title">ARCADE</h2>
+      <div class="ladder" id="ladder"></div>
+      <p class="status" id="arc-status"></p>
+      <div class="menu row">
+        <button class="mbtn ghost" data-cancel>SALIR</button>
+        <button class="mbtn red" id="btn-arc-go">¡A PELEAR!</button>
+      </div>
+    </section>
+
+    <section id="scr-ending" class="screen">
+      <h2 class="win">¡CAMPEÓN!</h2>
+      <div class="ending"><canvas id="ending-cv"></canvas><p id="ending-text"></p></div>
+      <div class="menu"><button class="mbtn red" data-cancel>MENÚ</button></div>
+    </section>
+
+    <section id="scr-settings" class="screen">
+      <h2>AJUSTES</h2>
+      <div class="menu">
+        <button class="mbtn toggle" data-set="music">MÚSICA</button>
+        <button class="mbtn toggle" data-set="sfx">SONIDOS</button>
+        <button class="mbtn toggle" data-set="vib">VIBRACIÓN</button>
+        <button class="mbtn ghost" id="btn-settings-back">VOLVER</button>
+      </div>
+    </section>
+
+    <section id="scr-cpu" class="screen">
+      <h2>ELIGE DIFICULTAD</h2>
+      <div class="menu">
+        <button class="mbtn" data-cpu="easy">FÁCIL</button>
+        <button class="mbtn" data-cpu="normal">NORMAL</button>
+        <button class="mbtn red" data-cpu="hard">DIFÍCIL</button>
+        <button class="mbtn ghost" data-go="main">VOLVER</button>
+      </div>
+    </section>
+
+    <section id="scr-select" class="screen">
+      <h2>ELIGE PERSONAJE</h2>
+      <div class="cards" id="cards"></div>
+      <div class="menu row">
+        <button class="mbtn ghost" id="btn-select-back">VOLVER</button>
+        <button class="mbtn red" id="btn-select-ok">SIGUIENTE</button>
+      </div>
+    </section>
+
+    <section id="scr-stage" class="screen">
+      <h2>ELIGE ESCENARIO</h2>
+      <div class="stages" id="stages"></div>
+      <div class="menu row">
+        <button class="mbtn ghost" id="btn-stage-back">VOLVER</button>
+        <button class="mbtn red" id="btn-stage-ok">¡A PELEAR!</button>
+      </div>
+    </section>
+
+    <section id="scr-online" class="screen">
+      <h2>MULTIJUGADOR</h2>
+      <div class="menu">
+        <button class="mbtn" id="btn-host">CREAR SALA</button>
+        <form id="join-form" class="join">
+          <input id="join-code" maxlength="5" placeholder="CÓDIGO" autocomplete="off" autocapitalize="characters" spellcheck="false">
+          <button class="mbtn small" type="submit">UNIRSE</button>
+        </form>
+        <button class="mbtn ghost" data-go="main">VOLVER</button>
+      </div>
+    </section>
+
+    <section id="scr-host" class="screen">
+      <h2>TU SALA</h2>
+      <div class="code" id="host-code">· · · · ·</div>
+      <p class="status" id="host-status">Creando sala…</p>
+      <div class="menu">
+        <button class="mbtn" id="btn-share" disabled>COMPARTIR LINK</button>
+        <button class="mbtn ghost" data-cancel>CANCELAR</button>
+      </div>
+    </section>
+
+    <section id="scr-invite" class="screen">
+      <p class="tag">te retaron a una pelea en la sala</p>
+      <div class="code" id="invite-code"></div>
+      <div class="menu">
+        <button class="mbtn red" id="btn-accept">¡ENTRAR A PELEAR!</button>
+        <button class="mbtn ghost" data-cancel>MENÚ</button>
+      </div>
+    </section>
+
+    <section id="scr-join" class="screen">
+      <h2>CONECTANDO</h2>
+      <p class="status" id="join-status">Buscando la sala…</p>
+      <div class="menu"><button class="mbtn ghost" data-cancel>CANCELAR</button></div>
+    </section>
+
+    <section id="scr-help" class="screen">
+      <h2>CONTROLES</h2>
+      <div class="help">
+        <p><b>Joystick</b> ← → moverte · <b>↑</b> saltar · <b>↓</b> agacharte · <b>doble toque</b> ← → dash</p>
+        <p><b class="c-p">PUÑO</b> y <b class="c-k">PATADA</b> golpes rápidos: encadénalos para combos (P,P,P · P,P,GIRATORIA · K,K…)</p>
+        <p><b class="c-h">GANCHO</b> puño fuerte con paso · con ← o ↓: <b>puño ascendente</b> que lanza al aire</p>
+        <p><b class="c-h">GIRATORIA</b> patada fuerte que derriba · con →: <b>patada lateral</b> · con ↓: <b>barrida</b></p>
+        <p><b class="c-g">AGARRE</b> rodillazos y lanzamiento · con ←: <b>suplex</b> · si te agarran, púlsalo rápido para escapar</p>
+        <p><b class="c-b">GUARDIA</b> bloquea · <b class="c-s">ESPECIAL</b> con media barra · barra llena: <b>SÚPER</b> · si lanzas al rival, ↑ para seguirlo en el aire</p>
+        <p><b>↓ + <span class="c-s">ESPECIAL</span></b> con un cuarto de barra: <b>técnica única</b> de cada personaje (teletransporte, agarre a distancia, detener el tiempo, escudo, curación, contraataque o embestida)</p>
+        <p class="kb">Teclado: A/D mover · W saltar · S agacharse · J puño · K patada · U gancho · I giratoria · H agarre · L especial · Shift/O guardia</p>
+      </div>
+      <div class="menu"><button class="mbtn ghost" data-go="main">VOLVER</button></div>
+    </section>
+
+    <section id="scr-pause" class="screen">
+      <h2>PAUSA</h2>
+      <div class="menu">
+        <button class="mbtn" id="btn-resume">CONTINUAR</button>
+        <button class="mbtn ghost btn-settings">AJUSTES</button>
+        <button class="mbtn ghost" data-cancel>SALIR AL MENÚ</button>
+      </div>
+    </section>
+
+    <section id="scr-end" class="screen dim-less">
+      <h2 id="end-title">¡VICTORIA!</h2>
+      <p class="status" id="end-status"></p>
+      <div class="menu">
+        <button class="mbtn red" id="btn-rematch">REVANCHA</button>
+        <button class="mbtn ghost" data-cancel>MENÚ</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="rotate"><div class="phone"></div><p>Gira tu teléfono para pelear</p></div>
+  <div id="toast"></div>
+
+</body>
+</html>
